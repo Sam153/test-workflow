@@ -1,4 +1,4 @@
-name: Manual Environment Workflow
+name: Manual Environment Deployment
 
 on:
   workflow_dispatch:
@@ -17,7 +17,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # Attach job to selected GitHub Environment
     environment:
       name: ${{ inputs.environment }}
 
@@ -25,8 +24,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Print Details
+      - name: Validate Branch for Prod
+        if: ${{ inputs.environment == 'prod' }}
+        run: |
+          echo "Validating branch for PROD deployment..."
+          BRANCH="${{ github.ref_name }}"
+          echo "Current Branch: $BRANCH"
+
+          if [[ "$BRANCH" != release* ]]; then
+            echo "ERROR: Prod deployments are allowed only from branches starting with 'release'"
+            exit 1
+          fi
+
+          echo "Branch validation passed for PROD"
+
+      - name: Print Deployment Info
         run: |
           echo "Hello World"
           echo "Branch Name: ${{ github.ref_name }}"
-          echo "Deploying to Environment: ${{ inputs.environment }}"
+          echo "Deploying to: ${{ inputs.environment }}"
