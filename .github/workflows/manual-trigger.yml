@@ -1,0 +1,17 @@
+name: Manual Hello Workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print Hello World and Branch Name
+        run: |
+          echo "Hello World"
+          echo "Branch Name: ${{ github.ref_name }}"
